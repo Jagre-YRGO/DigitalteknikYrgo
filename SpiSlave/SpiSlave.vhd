@@ -1,3 +1,15 @@
+-------------------------------------------------------------------------------
+-- File        :  SpiSlave.vhd
+-- Author      :  Erik Jagre
+-- Company     :  YRGO
+-- Created     :  2023-03-19
+-- Platform    :  Quartus/Modlesim/Windows
+-- Standard    :  VHDL 93
+-------------------------------------------------------------------------------
+-- Description :  Basic SPI slave-interface.
+--                
+-------------------------------------------------------------------------------
+
 library IEEE;
 use IEEE.std_logic_1164.all;
 

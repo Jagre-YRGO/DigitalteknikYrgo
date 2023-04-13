@@ -26,7 +26,7 @@ entity sevenseg is
 end entity;
 
 --architecture
-architecture rtl of sevenseg is
+architecture struct of sevenseg is
 
 signal o_inv : std_logic_vector(6 downto 0);
 
@@ -55,6 +55,12 @@ begin
    --7-segment displays on FPGA developmentboards are 
    --common anode -> logic low '0' lits segment
    --hence all bits needs to be inverted
-   o <= not(o_inv);
+   o(0) <= not(o_inv(6));
+   o(1) <= not(o_inv(5));
+   o(2) <= not(o_inv(4));
+   o(3) <= not(o_inv(3));
+   o(4) <= not(o_inv(2));
+   o(5) <= not(o_inv(1));
+   o(6) <= not(o_inv(0));
                
 end architecture;

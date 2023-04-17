@@ -16,8 +16,16 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 
+library work;
+use work.sevenseg_pkg.all;
+
 --entity declaration
 entity sevenseg is
+   generic
+   (
+      output_swap    : sevenseg_bitorder := msb_as_segment_A;
+      output_invert  : sevenseg_polarity := common_anode
+   );
    port
    (
       i : in  std_logic_vector(3 downto 0); --binary value that should be lit on disp
@@ -34,33 +42,54 @@ begin
    --truth table for segments based on input
    --Assuming that lit segment is logic high '1'
    with i select
-      o_inv <= "1111110" when "0000", --0
-               "0110000" when "0001", --1
-               "1101101" when "0010", --2
-               "1111001" when "0011", --3
-               "0110011" when "0100", --4
-               "1011011" when "0101", --5
-               "1011111" when "0110", --6
-               "1110000" when "0111", --7
-               "1111111" when "1000", --8
-               "1110011" when "1001", --9
-               "1110111" when "1010", --A
-               "0011111" when "1011", --b
-               "0001101" when "1100", --c
-               "0111101" when "1101", --d
-               "1001111" when "1110", --E
-               "1000111" when "1111", --F
-               "0000000" when others;
+      o_inv <= SEGMENTS_0 when "0000", --0
+               SEGMENTS_1 when "0001", --1
+               SEGMENTS_2 when "0010", --2
+               SEGMENTS_3 when "0011", --3
+               SEGMENTS_4 when "0100", --4
+               SEGMENTS_5 when "0101", --5
+               SEGMENTS_6 when "0110", --6
+               SEGMENTS_7 when "0111", --7
+               SEGMENTS_8 when "1000", --8
+               SEGMENTS_9 when "1001", --9
+               SEGMENTS_A when "1010", --A
+               SEGMENTS_B when "1011", --b
+               SEGMENTS_C when "1100", --c
+               SEGMENTS_D when "1101", --d
+               SEGMENTS_E when "1110", --E
+               SEGMENTS_F when "1111", --F
+               SEGMENTS_OFF when others;
                
    --7-segment displays on FPGA developmentboards are 
    --common anode -> logic low '0' lits segment
    --hence all bits needs to be inverted
-   o(0) <= not(o_inv(6));
-   o(1) <= not(o_inv(5));
-   o(2) <= not(o_inv(4));
-   o(3) <= not(o_inv(3));
-   o(4) <= not(o_inv(2));
-   o(5) <= not(o_inv(1));
-   o(6) <= not(o_inv(0));
-               
+	process(o_inv) is
+	begin
+      if output_invert = common_anode then
+         if (output_swap = msb_as_segment_A) then
+            o(0) <= not(o_inv(6));
+            o(1) <= not(o_inv(5));
+            o(2) <= not(o_inv(4));
+            o(3) <= not(o_inv(3));
+            o(4) <= not(o_inv(2));
+            o(5) <= not(o_inv(1));
+            o(6) <= not(o_inv(0));
+         else
+            o <= not(o_inv);
+         end if;
+      else
+         if (output_swap = msb_as_segment_A) then
+            o(0) <= o_inv(6);
+            o(1) <= o_inv(5);
+            o(2) <= o_inv(4);
+            o(3) <= o_inv(3);
+            o(4) <= o_inv(2);
+            o(5) <= o_inv(1);
+            o(6) <= o_inv(0);
+         else
+            o <= o_inv;
+         end if;
+      end if;
+	end process;
+   
 end architecture;

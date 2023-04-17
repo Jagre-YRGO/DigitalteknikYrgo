@@ -7,9 +7,10 @@
 -- Standard    :  VHDL 93
 -------------------------------------------------------------------------------
 -- Description :  7-segmentdecoder with/select 
---                output MSB = segment A
---                output LSB = segment G
---                
+--
+-- Generics    :  output_swap - reverse bit order on ouptuts
+--                output_invert - invert outputs depending on PCB layout
+--
 -------------------------------------------------------------------------------
 
 --lib inclusion
@@ -36,7 +37,7 @@ end entity;
 --architecture
 architecture struct of sevenseg is
 
-signal o_inv : std_logic_vector(6 downto 0);
+signal o_inv, o_reversed : std_logic_vector(6 downto 0);
 
 begin
    --truth table for segments based on input
@@ -59,37 +60,18 @@ begin
                SEGMENTS_E when "1110", --E
                SEGMENTS_F when "1111", --F
                SEGMENTS_OFF when others;
-               
-   --7-segment displays on FPGA developmentboards are 
-   --common anode -> logic low '0' lits segment
-   --hence all bits needs to be inverted
-	process(o_inv) is
-	begin
-      if output_invert = common_anode then
-         if (output_swap = msb_as_segment_A) then
-            o(0) <= not(o_inv(6));
-            o(1) <= not(o_inv(5));
-            o(2) <= not(o_inv(4));
-            o(3) <= not(o_inv(3));
-            o(4) <= not(o_inv(2));
-            o(5) <= not(o_inv(1));
-            o(6) <= not(o_inv(0));
-         else
-            o <= not(o_inv);
-         end if;
-      else
-         if (output_swap = msb_as_segment_A) then
-            o(0) <= o_inv(6);
-            o(1) <= o_inv(5);
-            o(2) <= o_inv(4);
-            o(3) <= o_inv(3);
-            o(4) <= o_inv(2);
-            o(5) <= o_inv(1);
-            o(6) <= o_inv(0);
-         else
-            o <= o_inv;
-         end if;
-      end if;
-	end process;
+         
+   --select reversed bit order or not based on msb/lsb_as_segment_A
+   with output_swap select
+      o_reversed <=  o_inv(0) & o_inv(1) & o_inv(2) & o_inv(3) &
+                     o_inv(4) & o_inv(5) & o_inv(6)   when msb_as_segment_A,
+                     o_inv                            when lsb_as_segment_A,
+                     SEGMENTS_OFF                     when others;
    
+   --select inverted or not based on common cathode/anode
+   with output_invert select
+      o <=  o_reversed        when common_cathode,
+            not(o_reversed)   when common_anode,
+            SEGMENTS_OFF      when others;
+            
 end architecture;

@@ -6,7 +6,7 @@
 -- Platform    :  Quartus/Modlesim/Windows
 -- Standard    :  VHDL 93
 -------------------------------------------------------------------------------
--- Description :  My first sequential VHDL for a single flip flop
+-- Description :  My first sequential VHDL for a 3 bit shiftregister
 -------------------------------------------------------------------------------
 
 --lib inclusion

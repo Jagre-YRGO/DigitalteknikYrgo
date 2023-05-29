@@ -23,7 +23,7 @@ end entity;
 architecture rtl of windowstate_tb is
 
 signal clk_s   : std_logic := '0';
-signal rst_n_s : std_logic; --aktiv lÃ¥gsignal 
+signal rst_n_s : std_logic; --aktiv låg signal 
 signal press_s : std_logic := '0';
 signal cw_s    : std_logic;
 signal ccw_s   : std_logic;
@@ -60,6 +60,24 @@ begin
       rst_n_s <= '0';
       wait for 20 ns;
       rst_n_s <= '1';
+      
+      --vÃ¤nta några klockcykler
+      wait for 59 ns;
+      --tryck knapp i 30 ns, sedan släpp
+      press_s <= '1';
+      wait for 130 ns;
+      press_s <= '0';
+      --vÃ¤nta några klockcykler
+      wait for 50 ns;
+
+      --tryck knapp på nytt i 30 ns, sedan släpp
+      --tryck knapp i 30 ns, sedan släpp
+      press_s <= '1';
+      wait for 30 ns;
+      press_s <= '0';
+      
+      
+      
       wait;
    end process;
 end;

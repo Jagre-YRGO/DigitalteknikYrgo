@@ -16,13 +16,13 @@ use IEEE.std_logic_1164.all;
 entity CarBreak is
 	port
 	(
-		driver, adas_ok, camera, radar 	: in std_logic;
-		break    								: out std_logic
+		pedal, camera, radar	: in std_logic;
+		break    				: out std_logic
 	);
 end entity;
 
 architecture Behaviour of CarBreak is
 
 begin
-	break <= driver or (adas_ok and camera and radar);
+	break <= pedal or (camera and radar);
 end architecture;
